@@ -6,7 +6,7 @@ Hopefully, it can be integrated into [scrcpy](https://github.com/Genymobile/scrc
 
 # Demo
 
-[YouTube](https://youtu.be/s9LZpAnIf4A)
+[![IMAGE ALT TEXT](https://img.youtube.com/vi/s9LZpAnIf4A/0.jpg)](https://youtu.be/s9LZpAnIf4A "Video Title")
 
 # HowTo
 
