@@ -57,21 +57,30 @@ public class SocketIME extends InputMethodService {
     }
 
     private void stopService() {
-        if (mLocalSocketServer != null) {
+        if (mListened) {
+            // mark thread as interrupted
+            mThread.interrupt();
+            Log.i(SOCKET_IME, "Interrupted thread");
+
+            // now send connect request to myself to trigger leaving accept()
+            LocalSocket ls = new LocalSocket();
             try {
-                mLocalSocket.close();
+                ls.connect(mLocalSocketServer.getLocalSocketAddress());
+                ls.close();
+            } catch (Exception e) {
+
+            }
+            Log.i(SOCKET_IME, "Leave accept");
+
+            try {
                 mLocalSocketServer.close();
+                mLocalSocket.shutdownInput();
+                mLocalSocket.close();
+                Log.i(SOCKET_IME, "Close server socket");
             } catch (Exception e) {
 
             }
         }
-
-        if (mListened) {
-            mThread.interrupt();
-        }
-
-        mLocalSocketServer = null;
-        mLocalSocket = null;
     }
 
     private void startListenSocket() {
@@ -84,20 +93,19 @@ public class SocketIME extends InputMethodService {
         });
 
         mThread.start();
-        Log.i(SOCKET_IME, "Thread started");
     }
 
     private void listenSocket() {
         String msg;
 
-        if (mLocalSocketServer == null || mLocalSocket == null) {
-            try {
-                mLocalSocketServer = new LocalServerSocket(SOCKET_NAME);
-                mLocalSocket = mLocalSocketServer.accept();
-                Log.i(SOCKET_IME, "Server created");
-            } catch (Exception e) {
-                Log.i(SOCKET_IME, "Failed to create server");
-            }
+        Log.i(SOCKET_IME, "Thread started");
+        try {
+            mLocalSocketServer = new LocalServerSocket(SOCKET_NAME);
+            Log.i(SOCKET_IME, "Server created");
+            mLocalSocket = mLocalSocketServer.accept();
+            Log.i(SOCKET_IME, "Client connected");
+        } catch (Exception e) {
+            Log.i(SOCKET_IME, "Failed to create server");
         }
 
         while (!interrupted()) {
