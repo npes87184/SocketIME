@@ -20,20 +20,22 @@ public class SocketIME extends InputMethodService {
     private static final String SOCKET_NAME = "socket-ime";
     private final String SOCKET_IME = "SocketIME";
     private boolean mListened = false;
+    private Button mBtnConnect;
+    private Button mBtnClose;
 
     @Override
     public View onCreateInputView() {
         View mInputView = getLayoutInflater().inflate(R.layout.view, null);
-        Button btnConnect = mInputView.findViewById(R.id.buttonConnect);
-        btnConnect.setOnClickListener(new View.OnClickListener() {
+        mBtnConnect = mInputView.findViewById(R.id.buttonConnect);
+        mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startService();
             }
         });
 
-        Button btnClose = mInputView.findViewById(R.id.buttonClose);
-        btnClose.setOnClickListener(new View.OnClickListener() {
+        mBtnClose = mInputView.findViewById(R.id.buttonClose);
+        mBtnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 stopService();
@@ -53,6 +55,8 @@ public class SocketIME extends InputMethodService {
     private void startService() {
         if (!mListened) {
             startListenSocket();
+            mBtnClose.setEnabled(true);
+            mBtnConnect.setEnabled(false);
         }
     }
 
@@ -80,6 +84,9 @@ public class SocketIME extends InputMethodService {
             } catch (Exception e) {
 
             }
+
+            mBtnClose.setEnabled(false);
+            mBtnConnect.setEnabled(true);
         }
     }
 
