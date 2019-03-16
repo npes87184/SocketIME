@@ -17,7 +17,7 @@ public class SocketIME extends InputMethodService {
     private LocalServerSocket mLocalSocketServer = null;
     private LocalSocket mLocalSocket = null;
     private Thread mThread = null;
-    private static final String SOCKET_NAME = "scrcpy-input";
+    private static final String SOCKET_NAME = "socket-ime";
     private final String SOCKET_IME = "SocketIME";
     private boolean mListened = false;
 

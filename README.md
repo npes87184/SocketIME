@@ -10,7 +10,7 @@ Hopefully, it can be integrated into [scrcpy](https://github.com/Genymobile/scrc
 
 # HowTo
 
-1. adb forward tcp:5566 localabstract:scrcpy-input
+1. adb forward tcp:5566 localabstract:socket-ime
 2. Change IME to SocketIME in android
 3. python socket_ime_test.py
 4. Enjoy!
