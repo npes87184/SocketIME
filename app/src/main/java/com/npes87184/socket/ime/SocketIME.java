@@ -5,6 +5,7 @@ import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.Button;
 
@@ -19,13 +20,19 @@ public class SocketIME extends InputMethodService {
     private Thread mThread = null;
     private static final String SOCKET_NAME = "socket-ime";
     private final String SOCKET_IME = "SocketIME";
-    private boolean mListened = false;
     private Button mBtnConnect;
     private Button mBtnClose;
 
     @Override
     public View onCreateInputView() {
         View mInputView = getLayoutInflater().inflate(R.layout.view, null);
+        mThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                listenSocket();
+            }
+        });
+
         mBtnConnect = mInputView.findViewById(R.id.buttonConnect);
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,8 +59,19 @@ public class SocketIME extends InputMethodService {
         super.onDestroy();
     }
 
+    @Override
+    public void onStartInputView(EditorInfo info, boolean restarting) {
+        if (mThread.isAlive()) {
+            mBtnClose.setEnabled(true);
+            mBtnConnect.setEnabled(false);
+        } else {
+            mBtnClose.setEnabled(false);
+            mBtnConnect.setEnabled(true);
+        }
+    }
+
     private void startService() {
-        if (!mListened) {
+        if (!mThread.isAlive() && !mThread.isInterrupted()) {
             startListenSocket();
             mBtnClose.setEnabled(true);
             mBtnConnect.setEnabled(false);
@@ -61,7 +79,7 @@ public class SocketIME extends InputMethodService {
     }
 
     private void stopService() {
-        if (mListened) {
+        if (mThread.isAlive()) {
             // mark thread as interrupted
             mThread.interrupt();
             Log.i(SOCKET_IME, "Interrupted thread");
@@ -91,14 +109,6 @@ public class SocketIME extends InputMethodService {
     }
 
     private void startListenSocket() {
-        mListened = true;
-        mThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                listenSocket();
-            }
-        });
-
         mThread.start();
     }
 
@@ -123,7 +133,6 @@ public class SocketIME extends InputMethodService {
             }
         }
 
-        mListened = false;
         Log.i(SOCKET_IME, "Thread stopped");
     }
 
