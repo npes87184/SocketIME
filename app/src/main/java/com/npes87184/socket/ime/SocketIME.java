@@ -4,6 +4,7 @@ import android.inputmethodservice.InputMethodService;
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -130,6 +131,8 @@ public class SocketIME extends InputMethodService {
             InputConnection ic = getCurrentInputConnection();
             if (ic != null) {
                 ic.commitText(msg, 1);
+                ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
             }
         }
 
